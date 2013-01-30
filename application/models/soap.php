@@ -409,7 +409,7 @@ class Soap extends CI_Model {
             
         }else{
             
-            return "Imposible Cargar Pedido debido a un error desconocido";
+            return "Imposible Cargar Pedido debido a un error desconocido. " . $res['resultado'];
             
         }
         
@@ -469,7 +469,82 @@ class Soap extends CI_Model {
         }
 
     }
+
+    function get_catalogo()
+    {
+        $res = $this->ws_catalogo();
+        
+        if($res['codigo'] == 1){
+            
+            $xml = simplexml_load_string($res['resultado']);
+            
+            //print_r($xml);
+            
+            return $xml;
+            
+            
+            
+        }else{
+            
+            return "Imposible Cargar Catalogo debido a un error desconocido. " . $res['resultado'];
+            
+        }
+        
+        
+    }
     
+    function ws_catalogo()
+    {
+        $res = $this->get_servicio_activo();
+        $row = $res->row();
+        
+        
+        require_once(APPPATH.'libraries/nusoap/nusoap'.EXT); //includes nusoap
+        
+        $client = new nusoap_client($row->url, FALSE, '', '', '', '', '', 40);
+        $client->soap_defencoding = 'UTF-8';
+        $err = $client->getError();
+        
+        if($err)
+        {
+            return $err;
+        
+        }else{
+            
+            $params = array(
+                'usuario'       => USER_SERVICIOS,
+                'password'      => PASS_SERVICIOS,
+                'edo'           => $row->edo
+            );
+            
+            
+            $result = $client->call('catalogo', $params, $row->namespace, '');
+            
+            if($client->fault){
+                
+                return array('codigo' => 0, 'resultado' => 'Error en el constructor.');
+                
+            }else{
+                
+                $err1 = $client->getError();
+                if($err1){
+                    
+                    return array('codigo' => 0, 'resultado' => 'No hay respuesta del Proveedor. '.$err1.$err);
+
+                }else{
+                    
+                    return array('codigo' => 1, 'resultado' => $result);
+                    
+                }
+                
+
+            }
+            
+
+        }
+
+    }  
+
     function guardar_pedido_retail($xml)
     {
         $xml = simplexml_load_string($xml);
@@ -625,4 +700,46 @@ left join estados e on d.edo = e.estado_int
 group by edo, perini, perfin;";
         return $this->db->query($sql);
     }
+    
+    function genera_xml_temp($xml)
+    {
+        $row2 = $this->settings();
+        $rate = $row2->semanas_calculo / $row2->semanas_buffer;
+        
+        $buffer_ajustado = 0;
+        $pedido = 0;
+
+        $a = '<?xml version="1.0" encoding="UTF-8"?>';
+        $a.="<pedido sucursal=\"".$xml->attributes()->sucursal."\" nombre=\"".$xml->attributes()->nombre."\" perini=\"".$xml->attributes()->perini."\" perfin=\"".$xml->attributes()->perfin."\">";
+        
+        foreach($xml->producto as $row){
+            
+            
+            $buffer_ajustado = ceil($row->buffer * $rate);
+            $pedido = $buffer_ajustado - $row->inv;
+            
+            if($row->inv < $buffer_ajustado)
+            {
+                $a.="<linea><clave>".$row->clave."</clave><cantidad>".$pedido."</cantidad></linea>";
+            }
+            
+            $buffer_ajustado = 0;
+            $pedido = 0;
+
+        }
+        $a.="</pedido>";
+        
+        return $a;
+        
+    }
+
+    function settings()
+    {
+        $this->db->where('id', 1);
+        $query = $this->db->get('config');
+        $row = $query->row();
+        
+        return $row;
+    }
+
 }

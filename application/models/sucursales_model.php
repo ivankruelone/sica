@@ -11,6 +11,19 @@ class Sucursales_model extends CI_Model {
         $this->numsuc = $this->session->userdata('numsuc');
     }
     
+    function tipos(){
+        $query = $this->db->get('tipo_sucursal');
+        return $query->result();
+    }
+    
+    function juris(){
+        $this->db->select('juris, jurisdiccion, estado_int, e.estado');
+        $this->db->from('juris j');
+        $this->db->join('estados e', 'j.estado = e.estado_int', 'left');
+        $query = $this->db->get();
+        return $query->result();
+    }
+
     function catalogo($limit, $offset = 0){
         
         if($this->juris > 0){
@@ -93,6 +106,7 @@ class Sucursales_model extends CI_Model {
         $data->estado = $this->__get_estado($this->input->post('estado_int'));
         $data->cp = $this->input->post('cp');
         $data->diaped = $this->input->post('diaped');
+        $data->auto = $this->input->post('auto');
         $data->cad_min = $this->input->post('cad_min');
 
         $this->db->set('modificado', 'now()', false);
@@ -122,6 +136,7 @@ class Sucursales_model extends CI_Model {
         $data->estado = $this->__get_estado($this->input->post('estado_int'));
         $data->cp = $this->input->post('cp');
         $data->diaped = $this->input->post('diaped');
+        $data->auto = $this->input->post('auto');
         $data->cad_min = $this->input->post('cad_min');
 
         $this->db->set('modificado', 'now()', false);
@@ -131,6 +146,13 @@ class Sucursales_model extends CI_Model {
 
 
         return $this->db->affected_rows();
+    }
+    
+    function get_sucurales_auto_hoy()
+    {
+        $sql = "SELECT * FROM sucursales where auto = 1 and diaped = WEEKDAY(now());";
+        $query = $this->db->query($sql);
+        return $query;
     }
 
 }

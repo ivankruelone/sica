@@ -19,6 +19,40 @@ class Sucursales extends CI_Controller {
         }
     }
 
+	function tipos()
+	{
+       $data['menu'] = 5;
+	   $data['submenu'] = 5.2;
+       $data['titulo'] = 'Catalogo de Tipos';
+       $data['query'] = $this->sucursales_model->tipos();
+       $data['contenido'] = 'sucursales/tipos';
+       $this->load->view('main', $data);
+	}
+
+	function nuevo_tipo()
+	{
+       $data['menu'] = 5;
+	   $data['submenu'] = 5.2;
+       $data['titulo'] = 'Nuevo Tipo';
+       $data['contenido'] = 'sucursales/nuevo_tipo';
+       $this->load->view('main', $data);
+	}
+    
+    function submit_nuevo_tipo()
+    {
+        
+    }
+
+	function juris()
+	{
+       $data['menu'] = 5;
+	   $data['submenu'] = 5.3;
+       $data['titulo'] = 'Catalogo de Jurisdicciones';
+       $data['query'] = $this->sucursales_model->juris();
+       $data['contenido'] = 'sucursales/juris';
+       $this->load->view('main', $data);
+	}
+
 	function catalogo()
 	{
 	   $this->load->library('pagination');

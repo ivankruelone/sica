@@ -161,10 +161,9 @@ class Comun extends CI_Model {
         $query = $this->db->get('dias');
         
         $a = array();
-        $a[0] = "Selecciona una opcion";
         
         foreach($query->result() as $row){
-            $a[$row->dia_int] = $row->dia;
+            $a[$row->mysqldia] = $row->dia;
         }
         
         return $a;
@@ -414,6 +413,38 @@ order by cast(area as signed)
             (SELECT ".ESTADO.", clave, 1, 0, 0, 0, 0, 0, 0 FROM productos p where clave not in(select clave from productos_estados where estado = ".ESTADO."));";
             
         $this->db->query($sql2);
+    }
+    
+    function settings()
+    {
+        $this->db->where('id', 1);
+        $query = $this->db->get('config');
+        $row = $query->row();
+        
+        return $row;
+    }
+    
+    function semanas_buffer($perini, $perfin)
+    {
+        $sql = "SELECT CEIL(DATEDIFF('$perfin', '$perini')/7) as semanas_buffer;";
+        $query = $this->db->query($sql);
+        $row = $query->row();
+        
+        return $row->semanas_buffer;
+    }
+    
+    function update_settins_pedidos($perini, $perfin, $semanas_buffer, $semanas_calculo, $porcentaje)
+    {
+        $this->db->where('id', 1);
+        $a = array(
+            'perini' => $perini,
+            'perfin' => $perfin,
+            'semanas_buffer' => $semanas_buffer,
+            'semanas_calculo' => $semanas_calculo,
+            'porcentaje' => ceil($porcentaje)
+            );
+            
+        $this->db->update('config', $a);
     }
 
 }

@@ -20,7 +20,7 @@ $("#cp").mask("99999");
 $('#nuevo_cliente_form').submit(function(event)
 {
     event.preventDefault();
-    if(cia() && estado_int() && juris() && diaped()){
+    if(cia() && estado_int() && juris()){
         
     var url = "<?php echo site_url();?>/sucursales/submit_editar_sucursal";
     
@@ -41,6 +41,7 @@ $('#nuevo_cliente_form').submit(function(event)
         estado_int: $('#estado_int').attr('value'),
         cp: $('#cp').attr('value'),
         diaped: $('#diaped').attr('value'),
+        auto: $('#auto').attr('value'),
         cad_min: $('#cad_min').attr('value')
     };
     
@@ -92,18 +93,6 @@ function juris(){
     if(juris == 0)
     {
         alert('Selecciona una Jurisdiccion');
-        return false;
-    }else
-    {
-        return true;
-    }
-}
-
-function diaped(){
-    var diaped = $('#diaped').attr('value');
-    if(diaped == 0)
-    {
-        alert('Selecciona un Dia de Pedido');
         return false;
     }else
     {

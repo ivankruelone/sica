@@ -70,10 +70,22 @@
                                   'height' => '16',
                         );
 
+                        $image9 = array(
+                                  'src' => base_url().'images/icons/fugue/flag_blue.png',
+                                  'width' => '16',
+                                  'height' => '16',
+                        );
+
                         if($row->flag == 1){
                             $bandera = '<span id="flag_'.$row->id.'" tittle="'.$row->flag.'">'.img($image4).'</span>';
                         }else{
                             $bandera = '<span id="flag_'.$row->id.'" tittle="'.$row->flag.'">'.img($image5).'</span>';
+                        }
+                        
+                        if($row->automatico == 1){
+                            $bandera2 = '<span id="flag_'.$row->id.'" tittle="'.$row->flag.'">'.img($image9).'</span>';
+                        }else{
+                            $bandera2 = null;
                         }
                         
                     ?>
@@ -81,7 +93,7 @@
 							<td align="right"><?php echo $row->id;?></td>
 							<td><?php echo $row->fecha;?></td>
 							<td><?php echo $row->nombre;?></td>
-							<td><?php echo $row->numsuc.' - '.$row->sucursal." ".$bandera;?></td>
+							<td><?php echo $row->numsuc.' - '.$row->sucursal." ".$bandera." ".$bandera2;?></td>
 							<td><?php echo $row->est;?></td>
 							<td><?php echo $row->alta;?></td>
 							<td><?php echo $row->f_captura;?></td>
@@ -92,23 +104,36 @@
 							<td align="right"><?php if($row->canreq == 0){echo "0.00";}else{ echo number_format(($row->cansur/$row->canreq) * 100, 2);}?></td>
 							<td class="table-actions" align="center">
                                 <?php 
-                                if($row->estatus == 0){
-                                    echo anchor('pedidos/captura_pedido/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
-                                }elseif($row->estatus == 1){
-                                    echo anchor('pedidos/captura_surtido2/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/previo_pedido_surtido/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion', 'class' => 'with-tip', 'target' => '_blank'));
-                                    echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
-                                }elseif($row->estatus == 2){
-                                    echo anchor('pedidos/captura_embarque/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
-                                }elseif($row->estatus == 3){
-                                    echo anchor('pedidos/embarcado/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Ver Detalle', 'class' => 'with-tip'));
-                                    echo anchor('pedidos/pedido_embarque/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion', 'class' => 'with-tip', 'target' => '_blank'));
-                                    echo anchor('pedidos/pedido_embarcado_excel/'.$row->id, img($image8), array('title' => 'Bajar a Excel', 'class' => 'with-tip', 'target' => '_blank'));
-                                    echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
+                                $nivel = $this->session->userdata('nivel');
+                                
+                                if($nivel == 2){
+                                    if($row->estatus == 0){
+                                        echo anchor('pedidos/captura_pedido/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
+                                    }else{
+                                        echo anchor('pedidos/historico/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Ver Detalle', 'class' => 'with-tip'));
+                                    }
+                                    
+                                }else{
+
+                                    if($row->estatus == 0){
+                                        echo anchor('pedidos/captura_pedido/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
+                                    }elseif($row->estatus == 1){
+                                        echo anchor('pedidos/captura_surtido2/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/previo_pedido_surtido/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion', 'class' => 'with-tip', 'target' => '_blank'));
+                                        echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
+                                    }elseif($row->estatus == 2){
+                                        echo anchor('pedidos/captura_embarque/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Modificar', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/cancela_pedido/'.$row->id, img($image6), array('title' => 'Cancela Pedido', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
+                                    }elseif($row->estatus == 3){
+                                        echo anchor('pedidos/embarcado/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Ver Detalle', 'class' => 'with-tip'));
+                                        echo anchor('pedidos/pedido_embarque/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion', 'class' => 'with-tip', 'target' => '_blank'));
+                                        echo anchor('pedidos/pedido_embarcado_excel/'.$row->id, img($image8), array('title' => 'Bajar a Excel', 'class' => 'with-tip', 'target' => '_blank'));
+                                        echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
+                                    }
+                                
                                 }
                                 ?>
 							</td>

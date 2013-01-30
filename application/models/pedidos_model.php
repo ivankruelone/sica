@@ -48,14 +48,24 @@ class Pedidos_model extends CI_Model {
         $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
         $this->db->where('p.id', $id);
         
-        
-        
-        
         $query = $this->db->get();
         
         return $query->row();
     }
     
+    function get_pedido_automatico($id)
+    {
+        $this->db->select('p.*, s.numsuc, s.sucursal, nombre, s.estado_int');
+        $this->db->from('pedidos_retail_c p');
+        $this->db->join('sucursales s', 'p.sucursal = s.numsuc', 'LEFT');
+        $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
+        $this->db->where('p.id', $id);
+        
+        $query = $this->db->get();
+        
+        return $query->row();
+    }
+
     function cambiar_pedido_attr()
     {
         $valor = $this->input->post('valor');
@@ -82,6 +92,18 @@ class Pedidos_model extends CI_Model {
         return $query->result();
     }
     
+    function get_productos_automatico($id, $orden = 'p.tipo_producto, p.id', $direccion ='ASC')
+    {
+        $this->db->select('d.*, p.descripcion');
+        $this->db->from('pedidos_retail d');
+        $this->db->join('productos p', 'clave_sica = p.clave');
+        $this->db->where('c_id', $id);
+        $this->db->order_by($orden, $direccion);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+
     function get_productos2($id, $orden = 'd.id', $direccion ='DESC')
     {
         $this->db->select('d.*, l.lote, l.caducidad, s.subtipo_producto');
@@ -161,7 +183,7 @@ class Pedidos_model extends CI_Model {
         return $query->num_rows();
     }
 
-    function pedidos($estatus, $limit, $offset = 0)
+    function pedidos($estatus = null, $limit, $offset = 0)
     {
         $this->db->select('p.*, s.numsuc, sucursal, nombre, e.estatus as est, sum(d.canreq) as canreq, sum(d.cansur) as cansur');
         $this->db->from('pedidos p');
@@ -169,16 +191,15 @@ class Pedidos_model extends CI_Model {
         $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
         $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
         $this->db->join('detalle d', 'p.id = d.p_id', 'LEFT');
-        $this->db->where('p.estatus', $estatus);
+        
+        if(isset($estatus)){
+            $this->db->where('p.estatus', $estatus);
+        }
 
         if($this->numsuc > 0){
             $this->db->where('s.numsuc', $this->numsuc);
         }
 
-        if($this->nivel == 2){
-            $this->db->where('p.user_id', $this->user_id);
-        }
-        
         if($estatus == 3){
             $this->db->order_by('p.f_embarque', 'desc');
         }
@@ -191,25 +212,113 @@ class Pedidos_model extends CI_Model {
         return $query->result();
     }
 
-    function pedidos_rows($estatus)
+    function pedidos_automaticos($estatus = null, $limit, $offset = 0)
+    {
+        $this->db->select('p.*, s.numsuc, s.sucursal, nombre, e.estatus as est, sum(d.cantidad) as cantidad, sum(d.adicional) as adicional');
+        $this->db->from('pedidos_retail_c p');
+        $this->db->join('sucursales s', 'p.sucursal = s.numsuc', 'LEFT');
+        $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
+        $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
+        $this->db->join('pedidos_retail d', 'p.id = d.c_id', 'LEFT');
+        
+        if(isset($estatus)){
+            $this->db->where('p.estatus', $estatus);
+        }
+
+        if($this->numsuc > 0){
+            $this->db->where('s.numsuc', $this->numsuc);
+        }
+
+        if($estatus == 3){
+            $this->db->order_by('p.f_embarque', 'desc');
+        }
+        
+        $this->db->group_by('p.id');
+
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+
+    function pedidos_automaticos_hoy($estatus = null, $limit, $offset = 0)
+    {
+        $this->db->select('p.*, s.numsuc, s.sucursal, nombre, e.estatus as est, sum(d.cantidad) as cantidad, sum(d.adicional) as adicional');
+        $this->db->from('pedidos_retail_c p');
+        $this->db->join('sucursales s', 'p.sucursal = s.numsuc', 'LEFT');
+        $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
+        $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
+        $this->db->join('pedidos_retail d', 'p.id = d.c_id', 'LEFT');
+        if($estatus == 0){
+            $this->db->where('p.fecha', date('Y-m-d'));
+        }else{
+            
+        }
+        $this->db->group_by('p.id');
+        $this->db->limit($limit, $offset);
+        
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+
+    function pedidos_rows($estatus = null)
     {
         $this->db->select('p.id');
         $this->db->from('pedidos p');
         $this->db->join('sucursales s', 'p.sucursal_id = s.numsuc', 'LEFT');
         $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
         $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
-        $this->db->where('p.estatus', $estatus);
+        
+        if(isset($estatus)){
+            $this->db->where('p.estatus', $estatus);
+        }
+        
 
         if($this->numsuc > 0){
             $this->db->where('s.numsuc', $this->numsuc);
         }
 
-        if($this->nivel == 2){
-            $this->db->where('p.user_id', $this->user_id);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    function pedidos_automaticos_rows($estatus = null)
+    {
+        $this->db->select('p.id');
+        $this->db->from('pedidos_retail_c p');
+        $this->db->join('sucursales s', 'p.sucursal = s.numsuc', 'LEFT');
+        $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
+        $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
+        
+        if(isset($estatus)){
+            $this->db->where('p.estatus', $estatus);
+        }
+        
+
+        if($this->numsuc > 0){
+            $this->db->where('s.numsuc', $this->numsuc);
         }
 
         $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    function pedidos_automaticos_rows_hoy($estatus = null)
+    {
+        $this->db->select('p.id');
+        $this->db->from('pedidos_retail_c p');
+        $this->db->join('sucursales s', 'p.sucursal = s.numsuc', 'LEFT');
+        $this->db->join('usuarios u', 'p.user_id = u.id', 'LEFT');
+        $this->db->join('estatus_pedido e', 'p.estatus = e.id', 'LEFT');
         
+        if($estatus == 0){
+            $this->db->where('p.fecha', date('Y-m-d'));
+        }else{
+            
+        }
+
+        $query = $this->db->get();
         return $query->num_rows();
     }
 
@@ -407,6 +516,38 @@ class Pedidos_model extends CI_Model {
         
         
 
+    }
+    
+    function detalle_captura_cambio_automatico($porcentaje)
+    {
+        $this->db->select('cantidad');
+        $this->db->where('id', $this->input->post('id'));
+        $q1 = $this->db->get('pedidos_retail');
+        $r1 = $q1->row();
+        
+        $rate = ceil(($r1->cantidad * $porcentaje) / 100);
+        $valor = $this->input->post('valor');
+        
+        if($valor <= $rate){
+            $valor = $valor;
+        }else{
+            $valor = $rate;
+        }
+        
+        
+        $this->db->set($this->input->post('columna'), $valor);
+        $this->db->where('id', $this->input->post('id'));
+        if($this->db->update('pedidos_retail')){
+            
+            $this->db->select('(cantidad + adicional) as total');
+            $this->db->where('id', $this->input->post('id'));
+            $q = $this->db->get('pedidos_retail');
+            $r = $q->row();
+            
+            return $r->total;
+        }
+        
+        
     }
     
     function detalle_captura_cambio_lote_caucidad()
@@ -1034,6 +1175,80 @@ where op_id = ? and p.suc = ? and s.tipo_producto = ? and s.subtipo_producto = ?
             $this->db->insert('pedidos', $data);
             
             return $this->db->insert_id();
+    }
+
+    function cerrar_automaticos_hoy()
+    {
+        $sql = "SELECT id, sucursal FROM pedidos_retail_c p where estatus = 0 and fecha =date(now());";
+        
+        $query = $this->db->query($sql);
+        
+        if($query->num_rows() > 0){
+            
+            foreach($query->result() as $row)
+            {
+    
+                $sql2 = "SELECT clave_sica as clave, (cantidad + adicional) as cantidad FROM pedidos_retail p where c_id = ? and (cantidad + adicional) > 0;";
+    
+                $query2 = $this->db->query($sql2, array($row->id));
+                
+                if($query2->num_rows() > 0){
+                    
+                    $pedido_id = $this->inserta_control($row->sucursal);
+                    
+                    foreach($query2->result() as $row2)
+                    {
+                        $this->submit_captura_clave($pedido_id, $row2->clave, $row2->cantidad);
+                    }
+                    
+                    $this->actualiza_estatus_pedido_automatico($row->id, $pedido_id);
+                }else{
+                    $this->actualiza_estatus_pedido_automatico_vacio($row->id);
+                }
+    
+            }
+            
+            redirect('webservices/automaticos/4/success');
+
+        }else{
+            
+            $sql3 = "SELECT id, sucursal FROM pedidos_retail_c p where estatus = 1 and fecha =date(now());";
+            $q3 = $this->db->query($sql3);
+            
+            if($q3->num_rows() > 0){
+                redirect('webservices/automaticos/5/warning');
+            }else{
+                redirect('webservices/automaticos/6/warning');
+            }
+
+        }
+        
+        
+    }
+    
+    function actualiza_estatus_pedido_automatico($id, $folio)
+    {
+        $this->db->set('cerrado', 'now()', false);
+        $a = array('estatus' => 1,
+        'folio' => $folio
+            );
+        
+        $this->db->where('id', $id);
+        $this->db->update('pedidos_retail_c', $a);
+        
+        $b = array('automatico' => 1);
+        $this->db->where('id', $folio);
+        $this->db->update('pedidos', $b);
+        
+    }
+
+    function actualiza_estatus_pedido_automatico_vacio($id)
+    {
+        $this->db->set('cerrado', 'now()', false);
+        $a = array('estatus' => 1);
+        
+        $this->db->where('id', $id);
+        $this->db->update('pedidos_retail_c', $a);
     }
 
 }

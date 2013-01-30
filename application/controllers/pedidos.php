@@ -138,6 +138,28 @@ class Pedidos extends CI_Controller {
         
 	}
 
+	function historico_sucursal()
+	{
+	   $this->load->library('pagination');
+       $config['first_link'] = 'Primera';
+       $config['last_link'] = 'Ultima';
+       $config['next_link'] = 'Siguiente';
+       $config['prev_link'] = 'Anterior';
+       $config['base_url'] = site_url().'/pedidos/historico_sucursal/';
+       $config['total_rows'] = $this->pedidos_model->pedidos_rows();
+       $config['per_page'] = 100;
+       $this->pagination->initialize($config); 
+
+	   $data['menu'] = 4;
+	   $data['submenu'] = 4.6;
+       $data['titulo'] = 'Pedidos Cancelados';
+       $data['query'] = $this->pedidos_model->pedidos(null, $config['per_page'], $this->uri->segment(3));
+       $data['contenido'] = 'pedidos/pedidos';
+       $data['js'] = "pedidos/js_pedidos";
+       $this->load->view('main', $data);
+        
+	}
+
 	function nuevo_pedido()
 	{
 	   $data['menu'] = 4;
@@ -321,6 +343,13 @@ class Pedidos extends CI_Controller {
         $this->load->view('pedidos/detalle', $data);
     }
     
+    function detalle_captura_automatico()
+    {
+        $data['query'] = $this->pedidos_model->get_productos_automatico($this->input->post('id'));
+        $data['estatus'] = $this->input->post('estatus');
+        $this->load->view('pedidos/detalle_automatico', $data);
+    }
+
     function detalle_surtido()
     {
         $data['query'] = $this->pedidos_model->get_productos($this->input->post('id'));
@@ -527,6 +556,96 @@ class Pedidos extends CI_Controller {
     {
         echo $this->pedidos_model->regresa_pedido($id, $estatus);
     }
+
+	function en_captura_automaticos()
+	{
+	   $this->load->library('pagination');
+       $config['first_link'] = 'Primera';
+       $config['last_link'] = 'Ultima';
+       $config['next_link'] = 'Siguiente';
+       $config['prev_link'] = 'Anterior';
+       $config['base_url'] = site_url().'/pedidos/en_captura_automaticos/';
+       $config['total_rows'] = $this->pedidos_model->pedidos_automaticos_rows(0);
+       $config['per_page'] = 100;
+       $this->pagination->initialize($config); 
+
+	   $data['menu'] = 4;
+	   $data['submenu'] = 4.4;
+       $data['titulo'] = 'Pedidos automaticos en captura';
+       $data['query'] = $this->pedidos_model->pedidos_automaticos(0, $config['per_page'], $this->uri->segment(3));
+       $data['contenido'] = 'pedidos/pedidos_automaticos';
+       $data['js'] = "pedidos/js_pedidos_automaticos";
+       $this->load->view('main', $data);
+        
+	}
+
+	function captura_pedido_automatico($id, $submenu, $error = null)
+	{
+	   $data['menu'] = 4;
+	   $data['submenu'] = $submenu;
+       $data['titulo'] = 'Captura de pedido automatico';
+       $data['contenido'] = 'pedidos/captura_pedido_automatico';
+       $data['row'] = $this->pedidos_model->get_pedido_automatico($id);
+       $data['settings'] = $this->comun->settings();
+       $data['js'] = 'pedidos/js_captura_pedido_automatico';
+       $this->load->view('main', $data);
+        
+	}
+
+    function detalle_captura_cambio_automatico()
+    {
+        $row = $this->comun->settings();
+        echo $this->pedidos_model->detalle_captura_cambio_automatico($row->porcentaje);
+    }
+    
+    function cerrar_pedidos_automaticos_hoy()
+    {
+        $this->pedidos_model->cerrar_automaticos_hoy();
+    }
+
+	function en_captura_automaticos_hoy()
+	{
+	   $this->load->library('pagination');
+       $config['first_link'] = 'Primera';
+       $config['last_link'] = 'Ultima';
+       $config['next_link'] = 'Siguiente';
+       $config['prev_link'] = 'Anterior';
+       $config['base_url'] = site_url().'/pedidos/en_captura_automaticos/';
+       $config['total_rows'] = $this->pedidos_model->pedidos_automaticos_rows_hoy(0);
+       $config['per_page'] = 100;
+       $this->pagination->initialize($config); 
+
+	   $data['menu'] = 4;
+	   $data['submenu'] = 4.9;
+       $data['titulo'] = 'Pedidos automaticos de hoy';
+       $data['query'] = $this->pedidos_model->pedidos_automaticos_hoy(0, $config['per_page'], $this->uri->segment(3));
+       $data['contenido'] = 'pedidos/pedidos_automaticos';
+       $data['js'] = "pedidos/js_pedidos_automaticos";
+       $this->load->view('main', $data);
+        
+	}
+
+	function automaticos_historico()
+	{
+	   $this->load->library('pagination');
+       $config['first_link'] = 'Primera';
+       $config['last_link'] = 'Ultima';
+       $config['next_link'] = 'Siguiente';
+       $config['prev_link'] = 'Anterior';
+       $config['base_url'] = site_url().'/pedidos/automaticos_historico/';
+       $config['total_rows'] = $this->pedidos_model->pedidos_automaticos_rows_hoy(1);
+       $config['per_page'] = 100;
+       $this->pagination->initialize($config); 
+
+	   $data['menu'] = 4;
+	   $data['submenu'] = 4.9;
+       $data['titulo'] = 'Pedidos automaticos de hoy';
+       $data['query'] = $this->pedidos_model->pedidos_automaticos_hoy(1, $config['per_page'], $this->uri->segment(3));
+       $data['contenido'] = 'pedidos/pedidos_automaticos';
+       $data['js'] = "pedidos/js_pedidos_automaticos";
+       $this->load->view('main', $data);
+        
+	}
 
 }
 

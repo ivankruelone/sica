@@ -38,6 +38,18 @@ class Settings extends CI_Controller {
         
 	}
     
+	function pedidos_automaticos()
+	{
+	   $data['menu'] = 11;
+	   $data['submenu'] = 11.3;
+       $data['row'] = $this->comun->settings();
+       $data['titulo'] = 'Configuracion de pedidos automatizados';
+       $data['contenido'] = 'settings/pedidos_automaticos_config';
+       $data['js'] = 'settings/pedidos_automaticos_config_js';
+       $this->load->view('main', $data);
+        
+	}
+
     function submit_modificar_password()
     {
         $this->db->where('usuario', $this->session->userdata('usuario'));
@@ -56,5 +68,17 @@ class Settings extends CI_Controller {
         }else{
             echo "0";
         }
+    }
+    
+    function submit_pedidos_automaticos()
+    {
+        $perini = $this->input->post('perini');
+        $perfin = $this->input->post('perfin');
+        $semanas_buffer = $this->comun->semanas_buffer($perini, $perfin);
+        $semanas_calculo = $this->input->post('semanas');
+        $porcentaje = $this->input->post('porcentaje');
+        
+        $this->comun->update_settins_pedidos($perini, $perfin, $semanas_buffer, $semanas_calculo, $porcentaje);
+        redirect('settings/pedidos_automaticos');
     }
 }

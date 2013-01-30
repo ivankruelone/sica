@@ -45,12 +45,14 @@
             ?>
             
             <ul class="simple-list with-icon icon-info">
+                <li><?php echo anchor('webservices/catalogo/'.$submenu, 'Catalogo de Productos'); ?></li>
                 <li><?php echo anchor('webservices/retail_inv/'.$submenu, 'Inventario'); ?></li>
                 <li><?php echo anchor('webservices/retail_buffer/'.$submenu, 'Desplazamiento x Sucursal'); ?></li>
                 <li><?php echo anchor('webservices/retail_pedido/'.$submenu, 'Inventario Vs. Desplazamiento'); ?></li>
                 <li><?php echo anchor('webservices/retail_pedidos_generados/'.$submenu, 'Ver Pedidos Generados'); ?></li>
                 <li><?php echo anchor('webservices/retail_buffer_completo/'.$submenu, 'Desplazamiento Estado'); ?></li>
                 <li><?php echo anchor('webservices/desplazamiento/'.$submenu, 'Ver Desplazamiento'); ?></li>
+                <li><?php echo anchor('webservices/catalogo/'.$submenu, 'Catalogo de Productos'); ?></li>
             </ul>
             
             <?php    

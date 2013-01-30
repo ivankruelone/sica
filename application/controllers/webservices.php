@@ -122,6 +122,26 @@ class Webservices extends CI_Controller {
        $this->load->view('main', $data);
 	}
     
+	public function catalogo($submenu)
+	{
+	   $data['menu'] = 1;
+       $data['submenu'] = $submenu;
+       $data['titulo'] = 'Catalogo de Productos';
+       $data['contenido'] = 'webservices/catalogo';
+       $data['xml'] = $this->soap->get_catalogo();
+       print_r($data['xml']);
+       
+       //$this->load->view('main', $data);
+	}
+    
+    function prueba()
+    {
+        $xml = $this->soap->ws_catalogo();
+        echo "<pre>";
+        print_r($xml);
+        echo "</pre>";
+    }
+
     public function guardar_desplazamiento_estado($estado)
     {
         $this->soap->guarda_desplazamiento_estado($estado);
@@ -222,6 +242,78 @@ class Webservices extends CI_Controller {
        $data['query'] = $this->soap->get_pedido_generado($id);
        $data['query2'] = $this->soap->get_pedido_generado_detalle($id);
        $this->load->view('main', $data);
+    }
+    
+    function automaticos($res = 0, $tipo = null)
+    {
+	   $data['menu'] = 4;
+       $data['submenu'] = 4.9;
+       $data['titulo'] = 'Pedidos automaticos';
+       $data['contenido'] = 'webservices/pedidos_automaticos_portada';
+       $mensaje = null;
+       
+       if($res == 0){
+        $mensaje = "Hola";
+       }elseif($res == 1){
+        $mensaje = "Pedidos generados correctamente";
+       }elseif($res == 2){
+        $mensaje = "No hay sucursales configuradas para pedido el dia de hoy";
+       }elseif($res == 3){
+        $mensaje = "Ya has generado pedidos el dia de hoy, para generar nuevamente debes borrarlos primero.";
+       }elseif($res == 4){
+        $mensaje = "Los pedidos han sido cerrados correctamente, favor de verificarlos en el menu de pedidos con fecha del dia de hoy.";
+       }elseif($res == 5){
+        $mensaje = "Los pedidos de hoy ya han sido procesados y cerrados.";
+       }elseif($res == 6){
+        $mensaje = "No hay nada que procesar por el momento.";
+       }
+       
+       $this->load->model('sucursales_model');
+       $data['query'] = $this->sucursales_model->get_sucurales_auto_hoy();
+       $data['row'] = $this->comun->settings();
+       $data['mensaje'] = $mensaje;
+       $data['tipo'] = $tipo;
+       $this->load->view('main', $data);
+    }
+    
+    function generar_automaticos()
+    {
+        $this->load->model('sucursales_model');
+        
+        $sql = "SELECT id FROM pedidos_retail_c p where fecha = date(now());";
+        $q = $this->db->query($sql);
+        
+        if($q->num_rows() > 0){
+            
+            redirect('webservices/automaticos/3/warning');
+            
+        }else{
+
+            $query = $this->sucursales_model->get_sucurales_auto_hoy();
+            $row2 = $this->comun->settings();
+            
+            if($query->num_rows() > 0){
+    
+                foreach($query->result() as $row)
+                {
+                    $xml = $this->soap->get_sucursal_retail_pedido($row->numsuc, $row2->perini, $row2->perfin);
+                    $xml2 = $this->soap->genera_xml_temp($xml);
+                    $this->soap->guardar_pedido_retail($xml2);
+                }
+                
+                redirect('webservices/automaticos/1/success');
+                
+            }else{
+                
+                redirect('webservices/automaticos/2/warning');
+                
+            }
+            
+        }
+
+
+
+        
     }
 
 }

@@ -1,3 +1,6 @@
+<?php
+	$a = array('0' => 'NO', '1' => 'SI');
+?>
 <section class="grid_6">
     <div class="block-border">
 
@@ -78,6 +81,11 @@
             <p>
                 <label for="diaped">Dia de Pedido</label>
                 <?php echo form_dropdown('diaped', $dias, '', 'id="diaped"');?>
+            </p>
+
+            <p>
+                <label for="auto">Pedido Automatizado</label>
+                <?php echo form_dropdown('auto', $a, '', 'id="auto"');?>
             </p>
 
             <p>

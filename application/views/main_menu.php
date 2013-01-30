@@ -110,6 +110,7 @@
 					<li <?php if($submenu == 4.6){echo 'class="current"';}?>><?php echo anchor('pedidos/cancelados', 'Cancelados')?></li>
 					<li <?php if($submenu == 4.7){echo 'class="current"';}?>><?php echo anchor('pedidos/busqueda', 'Busqueda')?></li>
 					<li <?php if($submenu == 4.8){echo 'class="current"';}?>><?php echo anchor('pedidos/subida', 'Subida')?></li>
+					<li <?php if($submenu == 4.9){echo 'class="current"';}?>><?php echo anchor('webservices/automaticos', 'Pedidos automaticos')?></li>
 				</ul>
 			</li>
 			<li <?php if($menu == 5){echo 'class="clientes current"';}else{echo 'class="clientes"';}?>><a href="#" title="Sucursales">Sucursales</a>
@@ -137,6 +138,7 @@
 			<li <?php if($menu == 11){echo 'class="settings current"';}else{echo 'class="settings"';}?>><a href="#" title="Configuracion">Configuraci&oacute;n</a>
 				<ul>
 					<li <?php if($submenu == 11.1){echo 'class="current"';}?>><?php echo anchor('settings', 'Acerca de...')?></li>
+					<li <?php if($submenu == 11.3){echo 'class="current"';}?>><?php echo anchor('settings/pedidos_automaticos', 'Pedidos Automatizados')?></li>
 					<li <?php if($submenu == 11.2){echo 'class="current"';}?>><?php echo anchor('settings/modificar_password', 'Modificar Contrase&ntilde;a')?></li>
 				</ul>
             </li>
@@ -159,8 +161,8 @@
 				<ul>
 					<li <?php if($submenu == 4.1){echo 'class="current"';}?>><?php echo anchor('pedidos/nuevo_pedido', 'Nuevo Pedido')?></li>
 					<li <?php if($submenu == 4.2){echo 'class="current"';}?>><?php echo anchor('pedidos/en_captura', 'En Captura')?></li>
-					<li <?php if($submenu == 4.3){echo 'class="current"';}?>><?php echo anchor('pedidos/en_surtido', 'En Surtido')?></li>
-					<li <?php if($submenu == 4.4){echo 'class="current"';}?>><?php echo anchor('pedidos/en_embarque', 'En Embarque')?></li>
+					<li <?php if($submenu == 4.3){echo 'class="current"';}?>><?php echo anchor('pedidos/historico_sucursal', 'Historico')?></li>
+					<li <?php if($submenu == 4.4){echo 'class="current"';}?>><?php echo anchor('pedidos/en_captura_automaticos', 'Pedidos automaticos')?></li>
 				</ul>
 			</li>
 			<li <?php if($menu == 11){echo 'class="settings current"';}else{echo 'class="settings"';}?>><a href="#" title="Settings">Configuraci&oacute;n</a>
@@ -398,6 +400,20 @@
 	<nav id="main-nav">
 		
 		<ul class="container_12">
+			<li <?php if($menu == 3){echo 'class="inv current"';}else{echo 'class="inv"';}?>><a href="#" title="Inventario">Inventario</a>
+				<ul>
+					<li <?php if($submenu == 3.1){echo 'class="current"';}?>><?php echo anchor('inv', 'Inventario')?></li>
+					<li <?php if($submenu == 3.15){echo 'class="current"';}?>><?php echo anchor('inv/inv_clasificado_elige', 'Inventario Clasificado')?></li>
+					<li <?php if($submenu == 3.3){echo 'class="current"';}?>><?php echo anchor('inv/inicial/3.3', 'Inventario Inicial')?></li>
+                    <?php if($row->estatus == 1){?>
+					<li <?php if($submenu == 3.12){echo 'class="current"';}?>><?php echo anchor('inv/kardex/3.12', 'Kardex')?></li>
+					<li <?php if($submenu == 3.17){echo 'class="current"';}?>><?php echo anchor('inv/preajuste/3.17', 'Pre-Ajuste')?></li>
+					<li <?php if($submenu == 3.13){echo 'class="current"';}?>><?php echo anchor('inv/ajuste/3.13', 'Ajuste')?></li>
+					<li <?php if($submenu == 3.16){echo 'class="current"';}?>><?php echo anchor('inv/ajuste_area/3.16', 'Ajuste Area')?></li>
+					<li <?php if($submenu == 3.14){echo 'class="current"';}?>><?php echo anchor('inv/ajuste_hist/3.14', 'Ajuste Hist')?></li>
+                    <?php }?>
+				</ul>
+			</li>
 			<li <?php if($menu == 8){echo 'class="inv current"';}else{echo 'class="inv"';}?>><a href="#" title="Entradas">Entradas</a>
 				<ul>
                     <?php if($row->estatus == 1){?>

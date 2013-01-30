@@ -1,6 +1,6 @@
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
-
+    
     $('.datepicker').datepick({
         dateFormat: 'yyyy-mm-dd',
         alignment: 'bottom',
@@ -35,22 +35,8 @@ $(document).ready(function(){
             disabledClass: 'unavailable'
         }
     });
-    
-    $('#retail_form').submit(function(event){
-        event.preventDefault();
-        
-        
-            var url = $(this).attr('action');
-            
-            var variables = {
-                sucursal: $('#sucursal').attr('value'),
-                perini: $('#perini').attr('value'),
-                perfin: $('#perfin').attr('value')
-            };
-            $.post( url, variables, function(data) {
-                $('#resultado').html(data);
-            });
-    });
-    
+   
+   
 });
+   
 </script>
