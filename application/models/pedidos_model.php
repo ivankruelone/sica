@@ -1008,11 +1008,15 @@ group by tipo_producto, subtipo_producto;";
                 <td align="right">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="2">Numero de Cajas: '.$row2->cajas.'</td>
-                <td colspan="3">Numero de Hieleras: '.$row2->hieleras.'</td>
+                <td colspan="2" style="font-size: xx-large">Numero de Cajas: '.$row2->cajas.'</td>
+                <td colspan="3" style="font-size: xx-large">Numero de Hieleras: '.$row2->hieleras.'</td>
             </tr>
             <tr>
-                <td colspan="5">Observaciones: '.$row2->observaciones.'</td>
+                <td colspan="2" style="font-size: x-large; width: 360px;">Surtidor: </td>
+                <td colspan="2" style="font-size: x-large; width: 360px;">Empacador: </td>
+            </tr>
+            <tr>
+                <td colspan="5" width="720"  style="font-size: x-large;">Observaciones: '.$row2->observaciones.'</td>
             </tr>
         </tfoot>
         </table>';
@@ -1041,6 +1045,120 @@ group by tipo_producto, subtipo_producto;";
         </table>';
         
         return $tabla;
+    }
+    
+    function formato($id)
+    {
+        $this->db->select('p.id, cajas, sum(d.cansur) as cansur, p.fecha, p.sucursal_id, sucursal, s.estado, s.juris, j.jurisdiccion, colonia, municipio, calle, exterior, interior, cp');
+        $this->db->from('pedidos p');
+        $this->db->join('sucursales s', 'p.sucursal_id = s.numsuc');
+        $this->db->join('juris j', 's.juris = j.juris and s.estado_int = j.estado');
+        $this->db->join('detalle d', 'p.id = d.p_id', 'LEFT');
+        $this->db->where('p.id', $id);
+        $this->db->group_by('p.id');
+        $query = $this->db->get();
+        
+        $row = $query->row();
+        
+        $alm_formato='<table cellspacing="0" cellpadding="4" border="1" width="720">
+<tr align="center">
+<td>Embarco:</td>
+<td colspan="2"></td>
+<td colspan="6" rowspan="5">Folio:<br /><h1>'.$row->id.'</h1><br />Fecha:<br /><h1>'.$row->fecha.'</h1></td>
+</tr>
+<tr align="center">
+<td>Operador:</td>
+<td colspan="2"></td>
+</tr>
+<tr align="center">
+<td>Unidad:</td>
+<td colspan="2"></td>
+</tr>
+<tr align="center">
+<td>Placas:</td>
+<td colspan="2"></td>
+</tr>
+<tr align="center">
+<td colspan="3"><br /><br /><br /></td>
+</tr>
+<tr align="center">
+<td colspan="9" bgcolor="#F3F3F3"></td>
+</tr>
+<tr align="center">
+<td colspan="3">'.ALMACEN.' '.$row->estado.'</td>
+<td colspan="6" rowspan="2"></td>
+</tr>
+<tr align="center">
+<td colspan="3">Subarea:<br />Embarques</td>
+</tr>
+<tr align="center">
+<td colspan="9" bgcolor="#F3F3F3"></td>
+</tr>
+<tr align="center">
+<td colspan="2">Sucursal:</td>
+<td>Jurisdiccion:</td>
+<td>Pedido:</td>
+<td>Piezas:</td>
+<td>Cajas Cedis:</td>
+<td>Emp. original:</td>
+<td>Complemento:</td>
+<td>Total:</td>
+</tr>
+<tr align="center">
+<td colspan="2">'.$row->sucursal.'</td>
+<td>'.$row->juris.'</td>
+<td>1</td>
+<td>'.number_format($row->cansur, 0).'</td>
+<td>'.$row->cajas.'</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr align="center">
+<td colspan="2">Firma del Operador:</td>
+<td colspan="5">Colonia o poblacion:</td>
+<td colspan="2">Sello CEDIS '.$row->estado.':</td>
+</tr>
+<tr align="center">
+<td colspan="2"><br /><br /><br /></td>
+<td colspan="5">'.$row->calle.' '.$row->exterior.' '.$row->interior.' C. P. '.$row->cp.'<br />'.$row->colonia.', '.$row->municipio.', '.$row->estado.'</td>
+<td colspan="2" rowspan="3"></td>
+</tr>
+<tr align="center">
+<td colspan="5">Nombre, firma, no. de nomina y leyenda:<br /><br /><br /><br /></td>
+<td colspan="2">Autorizo:</td>
+</tr>
+<tr align="center">
+<td colspan="7"><h2>Recibi _______ cajas en total</h2></td>
+</tr>
+<tr align="center">
+<td colspan="9" bgcolor="#F3F3F3"></td>
+</tr>
+
+<tr align="center">
+<td colspan="2">Firma del Operador:</td>
+<td colspan="5">Colonia o poblacion:</td>
+<td colspan="2">Sello Unidad Hospitalaria:</td>
+</tr>
+<tr align="center">
+<td colspan="2"><br /><br /><br /></td>
+<td colspan="5">'.$row->calle.' '.$row->exterior.' '.$row->interior.' C. P. '.$row->cp.'<br />'.$row->colonia.', '.$row->municipio.', '.$row->estado.'</td>
+<td colspan="2" rowspan="3"></td>
+</tr>
+<tr align="center">
+<td colspan="5">Nombre, firma, no. de nomina y leyenda:<br /><br /><br /><br /></td>
+<td colspan="2">Autorizo:</td>
+</tr>
+<tr align="center">
+<td colspan="7"><h2>Recibi _______ cajas en total, a las ________ Hrs.</h2></td>
+</tr>
+<tr align="center">
+<td colspan="9" bgcolor="#F3F3F3"></td>
+</tr>
+
+</table>';
+
+        return $alm_formato;
     }
     
     function cancela_pedido($id, $motivo){

@@ -523,6 +523,15 @@ class Pedidos extends CI_Controller {
         $this->load->view('impresiones/previo_pedido', $data);
     }
     
+    function pedido_embarque_formato($id)
+    {
+        $data['header'] = $this->pedidos_model->embarque_header($id);
+        $data['detalle'] = $this->pedidos_model->formato($id);
+        //echo $this->pedidos_model->embarque_header($id);
+        //echo $this->pedidos_model->formato($id);
+        $this->load->view('impresiones/previo_pedido', $data);
+    }
+
 	function cerrar_embarque()
 	{
 	   $data['res'] = $this->pedidos_model->cerrar_embarque($this->input->post('id'));

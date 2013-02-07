@@ -130,6 +130,7 @@
                                     }elseif($row->estatus == 3){
                                         echo anchor('pedidos/embarcado/'.$row->id.'/'.$submenu, img($image2), array('title' => 'Ver Detalle', 'class' => 'with-tip'));
                                         echo anchor('pedidos/pedido_embarque/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion', 'class' => 'with-tip', 'target' => '_blank'));
+                                        echo anchor('pedidos/pedido_embarque_formato/'.$row->id.'/'.$submenu, img($image3), array('title' => 'Impresion formato', 'class' => 'with-tip', 'target' => '_blank'));
                                         echo anchor('pedidos/pedido_embarcado_excel/'.$row->id, img($image8), array('title' => 'Bajar a Excel', 'class' => 'with-tip', 'target' => '_blank'));
                                         echo anchor('pedidos/regresa_pedido/'.$row->id.'/'.$row->estatus, img($image7), array('title' => 'Regresa pedido al estado anterior', 'class' => 'with-tip'));
                                     }
